@@ -45,6 +45,7 @@ stm32-playground/
 ├── .gitignore
 ├── README.md
 ├── gated-led-chaser/
+├── morse-blinker/
 └── <project-name>/
 ```
 
@@ -94,9 +95,19 @@ internal pull-down, so it reads low when left floating.
 - CubeMX pin labels turning into macros such as `SIGNAL_IN_Pin` / `SIGNAL_IN_GPIO_Port`
 - Non-blocking timing with `HAL_GetTick()` instead of `HAL_Delay()`, so the main loop keeps running between steps
 
-### 2. TBD
+### 2. morse-blinker
 
-_Description coming soon._
+Blinks the message `"Hello World!"` in Morse code on the green LED (`LD4`), once after reset. Letters and digits are
+supported; other characters (like `!`) are skipped.
+
+**Timing:** one unit is 200 ms (`MORSE_UNIT_MS`). A dot lasts 1 unit and a dash 3 units, with gaps of 1 unit between
+signals, 3 between letters and 7 between words.
+
+**Concepts:**
+
+- Compact lookup table: each Morse code packed into one byte (low 3 bits = length, upper bits = dots/dashes)
+- Bit manipulation to decode the signals
+- Blocking timing with `HAL_Delay()`, in contrast to the non-blocking approach in `gated-led-chaser`
 
 ### 3. TBD
 
