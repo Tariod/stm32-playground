@@ -42,17 +42,16 @@ generated with CMake as the toolchain, so it can be opened directly in CLion.
 
 ```
 stm32-playground/
+├── .gitignore
 ├── README.md
-├── 01-<project-name>/
-├── 02-<project-name>/
-├── 03-<project-name>/
-└── 04-<project-name>/
+├── gated-led-chaser/
+└── <project-name>/
 ```
 
 A generated project looks like this:
 
 ```
-01-<project-name>/
+<project-name>/
 ├── <project-name>.ioc          # STM32CubeMX configuration
 ├── CMakeLists.txt              # top-level build (user sections can be edited)
 ├── CMakePresets.json           # Debug / Release presets (Ninja, output in build/)
