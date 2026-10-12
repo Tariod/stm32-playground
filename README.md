@@ -37,9 +37,8 @@ Useful references:
 
 ## Repository layout
 
-Each mini-project lives in its own directory and is a self-contained
-STM32CubeMX project (with its `.ioc` file) generated with CMake as the
-toolchain, so it can be opened directly in CLion.
+Each mini-project lives in its own directory and is a self-contained STM32CubeMX project (with its `.ioc` file)
+generated with CMake as the toolchain, so it can be opened directly in CLion.
 
 ```
 stm32-playground/
@@ -72,18 +71,29 @@ A generated project looks like this:
 ## Getting started
 
 1. Configure the project in STM32CubeMX and generate code (Project Manager → Toolchain / IDE: **CMake**).
-2. Open the project directory (or its `.ioc` file) in CLion. CLion picks up the
-   STM32CubeCLT tools and sets up the CMake and debug profiles.
-3. Write application code only between `/* USER CODE BEGIN ... */` and
-   `/* USER CODE END ... */` comments, so it survives code regeneration.
-4. Connect the board via the mini-USB (ST-LINK) port, then build, flash and
-   debug from CLion through the ST-LINK GDB server.
+2. Open the project directory (or its `.ioc` file) in CLion. CLion picks up the STM32CubeCLT tools and sets up the CMake
+   and debug profiles.
+3. Write application code only between `/* USER CODE BEGIN ... */` and `/* USER CODE END ... */` comments, so it
+   survives code regeneration.
+4. Connect the board via the mini-USB (ST-LINK) port, then build, flash and debug from CLion through the ST-LINK GDB
+   server.
 
 ## Mini-projects
 
-### 1. TBD
+### 1. gated-led-chaser
 
-_Description coming soon._
+A pair of adjacent user LEDs chases around the ring of four LEDs, moving one step per second (orange → green → blue →
+red, counter-clockwise on the board). The chase only advances while the `SIGNAL_IN` input is high, so it can be started
+and paused with a wire.
+
+**Wiring:** connect `PA1` to the nearest `VDD` pin on the header to run the chaser; disconnect it to pause. `PA1` has an
+internal pull-down, so it reads low when left floating.
+
+**Concepts:**
+
+- GPIO outputs (`LD3`–`LD6` on `PD12`–`PD15`) and a GPIO input with a pull-down resistor
+- CubeMX pin labels turning into macros such as `SIGNAL_IN_Pin` / `SIGNAL_IN_GPIO_Port`
+- Non-blocking timing with `HAL_GetTick()` instead of `HAL_Delay()`, so the main loop keeps running between steps
 
 ### 2. TBD
 
