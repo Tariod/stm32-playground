@@ -7,16 +7,16 @@ STM32Cube ecosystem.
 
 **Board:** [STM32F407G-DISC1](https://www.st.com/en/evaluation-tools/stm32f4discovery.html) (STM32F4DISCOVERY)
 
-| Feature         | Details                                                                   |
-|-----------------|---------------------------------------------------------------------------|
-| MCU             | STM32F407VGT6, Arm Cortex-M4 with FPU, up to 168 MHz                      |
-| Memory          | 1 MB Flash, 192 KB RAM (incl. 64 KB CCM)                                  |
-| Debugger        | On-board ST-LINK/V2-A (SWD), via mini-USB                                 |
-| Clock           | 8 MHz external crystal (HSE)                                              |
-| User LEDs       | LD4 green (PD12), LD3 orange (PD13), LD5 red (PD14), LD6 blue (PD15)      |
-| User button     | B1 (PA0)                                                                  |
-| Sensors / audio | LIS3DSH 3-axis accelerometer, MP45DT02 MEMS microphone, CS43L22 audio DAC |
-| USB             | USB OTG FS (micro-AB connector)                                           |
+| Feature         | Details                                                                                                 |
+|-----------------|---------------------------------------------------------------------------------------------------------|
+| MCU             | STM32F407VGT6, Arm Cortex-M4 with FPU, up to 168 MHz                                                    |
+| Memory          | 1 MB Flash, 192 KB RAM (incl. 64 KB CCM)                                                                |
+| Debugger        | On-board ST-LINK/V2-A (SWD), via mini-USB                                                               |
+| Clock           | 8 MHz external crystal (HSE)                                                                            |
+| User LEDs       | LD4 green (PD12), LD3 orange (PD13), LD5 red (PD14), LD6 blue (PD15)                                    |
+| User button     | B1 (PA0)                                                                                                |
+| Sensors / audio | LIS3DSH 3-axis accelerometer (LIS302DL on older revisions), MP45DT02 MEMS microphone, CS43L22 audio DAC |
+| USB             | USB OTG FS (micro-AB connector)                                                                         |
 
 Useful references:
 
@@ -46,6 +46,7 @@ stm32-playground/
 ├── README.md
 ├── gated-led-chaser/
 ├── morse-blinker/
+├── spirit-level/
 └── <project-name>/
 ```
 
@@ -62,7 +63,7 @@ A generated project looks like this:
 ├── Core/
 │   ├── Inc/                    # main.h, HAL config, interrupt headers
 │   └── Src/                    # main.c, interrupt handlers, system init
-├── Drivers/                    # CMSIS and STM32F4 HAL (copied by CubeMX)
+├── Drivers/                    # CMSIS and STM32F4 HAL (copied by CubeMX), optional BSP (added manually)
 ├── Middlewares/                # optional, e.g. USB Host library
 ├── startup_stm32f407xx.s       # vector table and reset handler
 └── STM32F407xx_FLASH.ld        # linker script
@@ -109,9 +110,18 @@ signals, 3 between letters and 7 between words.
 - Bit manipulation to decode the signals
 - Blocking timing with `HAL_Delay()`, in contrast to the non-blocking approach in `gated-led-chaser`
 
-### 3. TBD
+### 3. spirit-level
 
-_Description coming soon._
+Turns the board into a spirit level: tilting it lights the LED on the matching side. Every 100 ms the on-board
+accelerometer is read, and an LED turns on when the X or Y reading passes ±20 (red `LD5` / green `LD4` for X, orange
+`LD3` / blue `LD6` for Y). When the board lies flat, all LEDs stay off.
+
+**Concepts:**
+
+- Using ST's board support package (BSP) for the Discovery board (`Drivers/BSP/`), added to `CMakeLists.txt` by hand
+- Reading the accelerometer with `BSP_ACCELERO_Init()` / `BSP_ACCELERO_GetXYZ()`; the BSP detects whether the board has
+  a LIS3DSH or LIS302DL and sets up SPI itself, so SPI1 is not enabled in CubeMX
+- Non-blocking periodic polling with `HAL_GetTick()`
 
 ### 4. TBD
 
