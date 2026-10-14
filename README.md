@@ -47,7 +47,7 @@ stm32-playground/
 ├── gated-led-chaser/
 ├── morse-blinker/
 ├── spirit-level/
-└── <project-name>/
+└── code-breaker/
 ```
 
 A generated project looks like this:
@@ -123,6 +123,26 @@ accelerometer is read, and an LED turns on when the X or Y reading passes ±20 (
   a LIS3DSH or LIS302DL and sets up SPI itself, so SPI1 is not enabled in CubeMX
 - Non-blocking periodic polling with `HAL_GetTick()`
 
-### 4. TBD
+### 4. code-breaker
 
-_Description coming soon._
+A guessing game played on an external 4×4 matrix keypad. The board picks a secret 4-digit code, and you crack it one
+digit at a time:
+
+- each correct digit lights the next LED (orange → green → blue → red);
+- a wrong digit blinks all LEDs twice and sends you back to the first digit (the code stays the same);
+- after all four digits, the LEDs blink 8 times and a new code is generated.
+
+Only the digit keys are used; `A`–`D`, `*` and `#` are ignored.
+
+**Wiring:** keypad rows to `PD0`–`PD3` (`KEYPAD_ROW_1`–`KEYPAD_ROW_4`, outputs) and columns to `PD8`–`PD11`
+(`KEYPAD_COL_1`–`KEYPAD_COL_4`, inputs with internal pull-ups).
+
+**Concepts:**
+
+- Matrix keypad scanning: one row is pulled low every 2 ms and the columns are read, packing all 16 keys into a
+  bit-field union (`Key_State`)
+- Debouncing (a key must read the same for 3 full scans), press-only reporting, and ignoring multi-key presses to avoid
+  ghosting
+- Hardware random number generator (`RNG`) with rejection sampling for unbiased digits
+- A small non-blocking state machine (playing / error blink / win blink) driven by `HAL_GetTick()`
+- Splitting code into a separate module (`keypad.c` / `keypad.h`) added to `CMakeLists.txt`
